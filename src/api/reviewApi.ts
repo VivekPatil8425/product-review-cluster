@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const DUMMYJSON_BASE = 'https://dummyjson.com';
-const BACKEND_BASE = 'http://localhost:8000';
+const BACKEND_BASE = 'https://product-review-cluster.onrender.com';
 const CUSTOM_PRODUCTS_URL = 'https://dummyjson.com/products';
 
 export interface DummyJSONReview {
