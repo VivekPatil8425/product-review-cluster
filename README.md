@@ -1,241 +1,73 @@
-# Customer Review Clustering for eCommerce
+# 🛍️ Customer Review Clustering for eCommerce — My Journey
 
-A professional dark-themed web application that analyzes product reviews using machine learning. The app fetches reviews from DummyJSON API, performs clustering using DBSCAN, analyzes sentiment using VADER, and visualizes results with interactive charts.
+This project is my journey in building a tool to understand customer comments.  
+It uses a **FastAPI backend** and a **React (Vite) frontend**.
 
-## Features
+It automatically takes raw comments, groups them into themes (using **DBSCAN**), and checks for good or bad feelings (using **VADER**).
 
-- **DBSCAN Clustering**: Groups similar reviews together using density-based clustering
-- **VADER Sentiment Analysis**: Classifies reviews as positive, neutral, or negative
-- **Interactive Visualizations**: Pie charts, bar charts, and PCA scatter plots
-- **Real-time Analysis**: Fetch and analyze product reviews on demand
-- **Dark Theme**: Beautiful, modern UI with Tailwind CSS
-- **Responsive Design**: Works seamlessly on desktop and mobile devices
+---
 
-## Technology Stack
+## 🤔 Why I Built This
 
-### Frontend
-- React 18 + TypeScript
-- Vite
-- Tailwind CSS
-- Recharts
-- React Router DOM
-- Axios
+Reading every customer comment one by one is slow. It's hard to see the big patterns.
 
-### Backend
-- Python 3.9+
-- FastAPI
-- Scikit-learn (DBSCAN, TF-IDF, PCA)
-- VaderSentiment
-- NumPy
+I wanted to build a tool that quickly finds:
 
-## Installation
+- What do customers love?  
+- What parts are broken or need fixing?  
+- What problems keep happening?
 
-### Prerequisites
-- Node.js 18+ and npm
-- Python 3.9+
-- pip
+I chose **DBSCAN** because it's great at finding related groups and also finds "noise" (comments that don't fit any group).
 
-### Backend Setup
+---
 
-1. Navigate to the backend directory:
-```bash
-cd backend
-```
+## 💻 Tech I Used
 
-2. Create a virtual environment (recommended):
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+**Backend:** FastAPI, scikit-learn, VADER  
+**Frontend:** React (with Vite), react-plotly.js  
+**Data Source:** DummyJSON API
 
-3. Install Python dependencies:
-```bash
-pip install -r requirements.txt
-```
+---
 
-4. Start the backend server:
-```bash
-python app.py
-```
+## ✨ What It Does
 
-The backend API will be available at `http://localhost:8000`
+### 🧩 Backend (FastAPI)
 
-### Frontend Setup
+- Has an API endpoint (`/analyze`) that you send settings to.  
+- It grabs comments from the DummyJSON API.  
+- It cleans the text and turns it into numbers using **TF-IDF** (with 1-word and 2-word phrases).  
+- It groups the comments using **DBSCAN**.  
+- It finds the feeling (Positive, Neutral, Negative) for each comment using **VADER**.  
+- It sends back a summary for each group (top words, sample comments, feeling scores).
 
-1. Install dependencies:
-```bash
-npm install
-```
+### 💻 Frontend (React)
 
-2. Start the development server:
-```bash
-npm run dev
-```
+- You can change settings like `eps`, `min_samples`, and how many comments to get.  
+- It shows charts (made with **Plotly**) of the feelings for all comments and for each group.  
+- You can see the top words and sample comments for each group.
 
-The frontend will be available at `http://localhost:5173`
+---
 
-## Usage
+## 🧠 My Key Decisions and Learnings
 
-1. **Start Backend**: Make sure the Python backend is running on `http://localhost:8000`
-2. **Start Frontend**: Run the React development server
-3. **Navigate**: Open your browser to the frontend URL
-4. **Fetch Products**: Go to the Products page to load reviews from DummyJSON
-5. **Run Analysis**: Click "Run Clustering & Sentiment Analysis" button
-6. **View Results**: Explore the Analysis page with interactive charts and statistics
+### Why DummyJSON?
+It was a simple, stable API for getting "real-looking" fake comments. This let me test my app fast.
 
-## API Endpoints
+### Why TF-IDF with (1, 2) n-grams?
+Using both single words and two-word phrases (like "battery life") made my groups much clearer. Using `stop_words` helped ignore common words.
 
-### Backend API
+### Why DBSCAN over K-Means?
+DBSCAN was better for this job. It can find groups of any shape and automatically labels "noise" or "outliers".  
+This is perfect for messy review text.  
+I learned that changing `eps` and `min_samples` is key to finding good topics.
 
-- `GET /` - Health check
-- `POST /analyze` - Analyze reviews with DBSCAN and VADER
-  - Request body:
-    ```json
-    {
-      "reviews": [
-        {
-          "product": "Product Name",
-          "reviewer": "John Doe",
-          "rating": 5,
-          "comment": "Great product!"
-        }
-      ],
-      "eps": 0.5,
-      "min_samples": 2
-    }
-    ```
+### Why VADER?
+It was a fast and simple way to get sentiment scores without needing a big, complex model.
 
-### External API
+### Handling CORS was a big lesson!
+At first, my React app couldn't talk to my FastAPI backend. I learned to fix this in two ways:
 
-- DummyJSON API: `https://dummyjson.com/products?limit=10`
+- **For development:** Use the Vite proxy. This was the easiest way.  
+- **For production:** Set up `CORSMiddleware` in FastAPI to allow my exact frontend web address.
 
-## Project Structure
-
-```
-customer-review-clustering/
-├── backend/
-│   ├── app.py                 # FastAPI application
-│   └── requirements.txt       # Python dependencies
-├── src/
-│   ├── api/
-│   │   └── reviewApi.ts      # API integration layer
-│   ├── components/
-│   │   ├── ClusterBarChart.tsx
-│   │   ├── ClusterStats.tsx
-│   │   ├── ProductCard.tsx
-│   │   ├── ReviewCard.tsx
-│   │   ├── ScatterPlot.tsx
-│   │   └── SentimentPie.tsx
-│   ├── context/
-│   │   └── ReviewContext.tsx # Global state management
-│   ├── pages/
-│   │   ├── About.tsx         # Algorithm explanations
-│   │   ├── Analysis.tsx      # Results visualization
-│   │   ├── Home.tsx          # Landing page
-│   │   └── Products.tsx      # Review fetching
-│   ├── App.tsx               # Main app with routing
-│   ├── main.tsx              # Entry point
-│   └── index.css             # Tailwind styles
-├── package.json
-└── README.md
-```
-
-## How It Works
-
-### 1. Data Collection
-- Fetches product reviews from DummyJSON API
-- Extracts review text, ratings, and metadata
-
-### 2. Text Preprocessing
-- Converts text to lowercase
-- Removes punctuation and special characters
-- Tokenizes and normalizes text
-
-### 3. Feature Extraction
-- Uses TF-IDF (Term Frequency-Inverse Document Frequency)
-- Converts text into numerical vectors
-- Captures importance of words relative to corpus
-
-### 4. DBSCAN Clustering
-- Groups similar reviews based on content
-- Automatically determines number of clusters
-- Identifies outliers as noise points
-- Parameters:
-  - `eps`: Maximum distance between neighbors (default: 0.5)
-  - `min_samples`: Minimum points to form cluster (default: 2)
-
-### 5. Sentiment Analysis
-- Uses VADER lexicon-based approach
-- Generates compound sentiment score
-- Classifies as positive, neutral, or negative
-- Handles emojis, slang, and emphasis
-
-### 6. Visualization
-- PCA reduces dimensions to 2D for scatter plot
-- Interactive charts show cluster distribution
-- Color-coded sentiment visualization
-
-## Deployment
-
-### Frontend (Vercel)
-
-1. Push code to GitHub
-2. Connect repository to Vercel
-3. Set build command: `npm run build`
-4. Set output directory: `dist`
-5. Add environment variable for backend URL if needed
-
-### Backend (Render/Railway)
-
-1. Create new Python web service
-2. Connect GitHub repository
-3. Set build command: `pip install -r requirements.txt`
-4. Set start command: `python backend/app.py`
-5. Configure environment variables if needed
-
-## Configuration
-
-### DBSCAN Parameters
-
-Adjust clustering sensitivity in the analysis request:
-- **eps**: Lower values = tighter clusters (try 0.3-0.7)
-- **min_samples**: Higher values = more strict clustering (try 2-5)
-
-### Backend URL
-
-Update the backend URL in `src/api/reviewApi.ts` if deploying to production:
-```typescript
-const BACKEND_BASE = 'https://your-backend-url.com';
-```
-
-## Troubleshooting
-
-### Backend Connection Error
-- Ensure Python backend is running on port 8000
-- Check CORS is enabled in FastAPI
-- Verify backend URL in frontend code
-
-### No Reviews Found
-- Check DummyJSON API is accessible
-- Verify network connection
-- Check browser console for errors
-
-### Clustering Issues
-- Minimum 2 reviews required for clustering
-- Try adjusting eps and min_samples parameters
-- Check that reviews have text content
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is open source and available under the MIT License.
-
-## Acknowledgments
-
-- [DummyJSON](https://dummyjson.com) for the fake API
-- [VADER Sentiment](https://github.com/cjhutto/vaderSentiment) for sentiment analysis
-- [Scikit-learn](https://scikit-learn.org) for machine learning algorithms
-- [Recharts](https://recharts.org) for data visualization
+---
