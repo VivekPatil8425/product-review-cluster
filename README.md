@@ -1,4 +1,4 @@
-# 🛍️ Customer Review Clustering for eCommerce — My Journey
+# 🛍️ Customer Review Clustering for eCommerce
 
 This project is my journey in building a tool to understand customer comments.  
 It uses a **FastAPI backend** and a **React (Vite) frontend**.
